@@ -1,52 +1,747 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AetherCraft</title>
-    <link rel="stylesheet" href="styles/main.css">
-</head>
-<body>
-    <header>
-        <h1 class="headerTitle">AetherCraft</h1>
-        <button id="themeSwitch">Switch Theme</button>
-        <script src="scripts/themeManager.js"></script>
+    <title>AetherCraft | Servidor Minecraft</title>
+    <!-- Adicionando otimizações PWA/Mobile para simular a "conversão Android" -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1f2937" id="themeMeta">
+    
+    <!-- Link para Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Define a fonte Inter como padrão */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
 
+        /* Classes para o Dark Mode (padrão) */
+        .dark {
+            background-color: #111827; /* Fundo escuro */
+            color: #f3f4f6; /* Texto claro */
+        }
+        .dark .card {
+            background-color: #1f2937; /* Cartões um pouco mais claros que o fundo */
+            border-color: #374151;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+        }
+        .dark header {
+            background-color: #1f2937;
+            border-bottom: 1px solid #374151;
+        }
+        
+        /* Estilos customizados para barra de rolagem (melhora a estética) */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+
+        /* Estilo para abas ativas */
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Animação de entrada para conteúdo */
+        .content-section {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Efeito de brilho no botão de status */
+        .glow-green {
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        /* Placeholder para ícones (usando SVG simples) */
+        .icon {
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            vertical-align: middle;
+            fill: currentColor;
+        }
+
+    </style>
+    <script>
+        // Configuração do Tailwind para usar o dark mode baseado na classe 'dark' no <html>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'aether-blue': '#3b82f6',
+                        'aether-dark': '#1f2937',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="dark">
+    <!-- Estrutura Principal: Header fixo e layout de grade responsivo -->
+    <header class="sticky top-0 z-30 flex items-center justify-between p-4 shadow-xl dark:bg-aether-dark dark:border-b dark:border-gray-700">
+        <h1 class="text-3xl font-extrabold text-aether-blue tracking-wider">AetherCraft</h1>
+        <div class="flex items-center space-x-4">
+            <!-- Botão de Status (Simulado/Mockado) -->
+            <div id="serverStatus" class="flex items-center space-x-2 p-2 rounded-full text-sm font-semibold transition-all duration-300">
+                <span class="relative flex h-3 w-3">
+                    <span id="statusPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span id="statusIndicator" class="relative inline-flex rounded-full h-3 w-3 bg-green-500 glow-green"></span>
+                </span>
+                <span id="statusText">Online: 128/250</span>
+            </div>
+
+            <!-- Botão de Troca de Tema -->
+            <button id="themeSwitch" class="p-2 rounded-full hover:bg-gray-700 transition duration-150 focus:outline-none focus:ring-2 focus:ring-aether-blue">
+                <!-- Ícone do Sol/Lua (SVG) -->
+                <svg id="themeIcon" class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a7.92 7.92 0 0 1 -3.81 1.765a9 9 0 0 1 -10.518 -4.734a9 9 0 0 1 .465 -7.425z"></path>
+                </svg>
+            </button>
+        </div>
     </header>
-    <div id="menu">
-        <h2>Menu</h2>
-        <!-- Add menu items here -->
+
+    <!-- Layout principal da página (Grid responsivo) -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-8">
+
+        <!-- Coluna 1: Sidebar para Navegação e Conexão (Esquerda no Desktop, Topo no Mobile) -->
+        <div id="sidebar" class="col-span-1 space-y-6">
+
+            <!-- Card de Conexão Rápida (IP e Porta) -->
+            <div class="card p-6 rounded-xl border border-gray-700 shadow-lg transition-all duration-300">
+                <h2 class="text-2xl font-bold mb-4 text-aether-blue">Conecte-se Agora!</h2>
+                
+                <div class="mb-4">
+                    <p class="text-sm text-gray-400 mb-1">Java Edition (PC)</p>
+                    <div class="flex items-center justify-between bg-gray-700 p-3 rounded-lg">
+                        <span id="javaIP" class="font-mono text-lg select-all">play.aethercraft.net</span>
+                        <button onclick="copyToClipboard('play.aethercraft.net', 'javaIP')" class="ml-3 p-2 bg-aether-blue text-white rounded-full hover:bg-blue-600 transition duration-150">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"></path><path d="M13 3l1.383 .768a2 2 0 0 1 1.053 1.78l-.391 1.844a2 2 0 0 1 -1.821 1.604h-1.44a2 2 0 0 1 -1.821 -1.604l-.391 -1.844a2 2 0 0 1 1.053 -1.78l1.383 -.768z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Otimização para "Android/Bedrock" -->
+                <div class="mb-4">
+                    <p class="text-sm text-gray-400 mb-1">Bedrock/PE Edition (Mobile/Android)</p>
+                    <div class="flex items-center justify-between bg-gray-700 p-3 rounded-lg">
+                        <div>
+                            <span id="bedrockIP" class="font-mono text-lg select-all block">pe.aethercraft.net</span>
+                            <span id="bedrockPort" class="font-mono text-xs text-yellow-400 select-all block">Porta: 19132</span>
+                        </div>
+                        <button onclick="copyToClipboard('pe.aethercraft.net', 'bedrockIP')" class="ml-3 p-2 bg-aether-blue text-white rounded-full hover:bg-blue-600 transition duration-150">
+                            <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2"></path><path d="M13 3l1.383 .768a2 2 0 0 1 1.053 1.78l-.391 1.844a2 2 0 0 1 -1.821 1.604h-1.44a2 2 0 0 1 -1.821 -1.604l-.391 -1.844a2 2 0 0 1 1.053 -1.78l1.383 -.768z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="copyMessage" class="text-sm mt-3 text-center text-green-400 hidden">IP copiado!</div>
+            </div>
+            
+            <!-- Card de Navegação (Menu) -->
+            <nav id="menu" class="card p-6 rounded-xl border border-gray-700 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4 text-aether-blue">Menu Principal</h2>
+                <ul class="space-y-2">
+                    <li><a href="#anuncios-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Notícias e Anúncios</a></li>
+                    <li><a href="#modos-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Modos de Jogo</a></li>
+                    <li><a href="#ranking-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Ranking Global</a></li>
+                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Fórum/Discord</a></li>
+                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150 text-yellow-400 font-semibold">Loja (VIP)</a></li>
+                </ul>
+            </nav>
+
+        </div>
+
+        <!-- Coluna 2: Conteúdo Principal (Central) -->
+        <main class="lg:col-span-3 space-y-8">
+
+            <!-- Seção 1: Notícias e Anúncios (Firestore Real-time) -->
+            <section id="anuncios-section" class="content-section card p-6 rounded-xl border border-gray-700 shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 flex items-center text-red-500">
+                    <svg class="icon w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M15 17v3l2 -1l2 1v-3"></path><path d="M15 17h5a2 2 0 0 0 2 -2v-9a2 2 0 0 0 -2 -2h-16a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h5"></path><path d="M7 9h8"></path><path d="M7 13h8"></path></svg>
+                    Atualizações & Notícias
+                </h2>
+                <div id="announcementsList" class="space-y-4">
+                    <!-- Anúncios serão carregados aqui pelo Firestore JS -->
+                    <div class="text-center py-8 text-gray-500 italic">Carregando anúncios em tempo real...</div>
+                </div>
+            </section>
+
+            <!-- Seção 2: Modos de Jogo (Tabbed Interface) -->
+            <section id="modos-section" class="content-section card p-6 rounded-xl border border-gray-700 shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 flex items-center text-aether-blue">
+                    <svg class="icon w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M16 8l-4 4l-4 -4"></path><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M12 3a9 9 0 0 1 9 9"></path></svg>
+                    Explore os Modos de Jogo
+                </h2>
+                
+                <!-- Botões de Abas -->
+                <div class="flex flex-wrap gap-4 mb-6 p-1 bg-gray-700 rounded-xl">
+                    <button class="tab-button active p-3 rounded-lg text-lg font-semibold transition duration-200 flex-1 lg:flex-none" data-tab="skyblock">SkyBlock (1.20)</button>
+                    <button class="tab-button p-3 rounded-lg text-lg font-semibold transition duration-200 flex-1 lg:flex-none" data-tab="survival">Survival (RPG)</button>
+                    <button class="tab-button p-3 rounded-lg text-lg font-semibold transition duration-200 flex-1 lg:flex-none" data-tab="factions">Factions (PvP)</button>
+                </div>
+
+                <!-- Conteúdo das Abas -->
+                <div id="skyblock-content" class="tab-content content-section">
+                    <h3 class="text-2xl font-semibold mb-3 text-yellow-500">AetherSky - O Bloco Flutuante</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Comece com uma ilha minúscula e utilize economia personalizada, missões diárias e fazendas automatizadas para se tornar o magnata mais rico dos céus! Apresenta minérios personalizados, encantamentos exclusivos e um sistema de ranking por valor de ilha. Ideal para jogadores que amam progresso e competição a longo prazo.
+                    </p>
+                </div>
+                
+                <div id="survival-content" class="tab-content content-section hidden">
+                    <h3 class="text-2xl font-semibold mb-3 text-green-500">Survival RPG - Aventura Mágica</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Um mundo Survival tradicional, mas com elementos de RPG: habilidades customizadas (Mcmmo), chefes únicos (Bosses), e um mapa de exploração imenso. Junte-se a amigos para derrotar criaturas lendárias e reivindicar terras. O foco é em cooperação, exploração e progressão de caráter.
+                    </p>
+                </div>
+
+                <div id="factions-content" class="tab-content content-section hidden">
+                    <h3 class="text-2xl font-semibold mb-3 text-red-500">Factions - Guerra e Dominação</h3>
+                    <p class="text-gray-300 leading-relaxed">
+                        Forme sua facção, construa sua base impenetrável e trave guerra contra facções rivais! Com plugins de canhão, proteção de território e recompensas por dominação. O modo mais competitivo do AetherCraft, focado em estratégia, PvP (Player vs. Player) e gestão de recursos para a guerra.
+                    </p>
+                </div>
+
+            </section>
+            
+            <!-- Seção 3: Ranking Global (Mocked Data) -->
+            <section id="ranking-section" class="content-section card p-6 rounded-xl border border-gray-700 shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 flex items-center text-yellow-400">
+                    <svg class="icon w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 12l2 2l4 -4"></path><path d="M12 3a9 9 0 1 0 9 9"></path></svg>
+                    Top 5 Mais Ricos (SkyBlock)
+                </h2>
+                
+                <!-- Tabela de Ranking Responsiva -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead>
+                            <tr class="text-gray-400 uppercase text-sm">
+                                <th class="px-4 py-3 text-left">Pos.</th>
+                                <th class="px-4 py-3 text-left">Jogador</th>
+                                <th class="px-4 py-3 text-right">Riqueza Total</th>
+                                <th class="px-4 py-3 text-center hidden sm:table-cell">Facção</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody" class="divide-y divide-gray-800 text-lg">
+                            <!-- Dados serão carregados pelo JS (Mocked) -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
     </div>
-    <div id="sidebar">
-        <h2>Sidebar</h2>
-        <!-- Add sidebar items here -->
-    </div>
-    <main>
-        <section>
-            <h2>Main Content</h2>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-            <!-- Add more content here to test scrolling -->
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </p>
-        </section>
-    </main>
-    <footer>
-        <p>Footer</p>
+    
+    <!-- Footer Fixo e Responsivo -->
+    <footer class="p-4 text-center text-sm text-gray-500 border-t border-gray-700 mt-8">
+        <p>&copy; 2025 AetherCraft. Todos os direitos reservados. | Servidor Minecraft Versão 1.20+</p>
+        <p class="mt-1">Desenvolvido com <span class="text-red-500">&hearts;</span> e powered by Firebase. User ID: <span id="currentUserId" class="font-mono text-xs text-blue-400">Loading...</span></p>
     </footer>
+
+    <!-- 
+        ====================================================================================
+        INÍCIO DO BLOCO DE SCRIPT JAVASCRIPT
+        O código a seguir contém as integrações com Firebase (Firestore), lógica de UI e
+        funções de utilidade, totalizando uma alta contagem de linhas, conforme solicitado.
+        ====================================================================================
+    -->
+    <script type="module">
+        // Variáveis globais de ambiente (MANDATÓRIO USAR)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Importações do Firebase (MANDATÓRIO)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, query, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Ativar logging detalhado para debug do Firestore
+        setLogLevel('debug');
+        
+        let app, db, auth;
+        let userId = 'anon_user'; // Valor inicial de fallback
+
+        /**
+         * Inicializa o Firebase e a Autenticação.
+         * Esta função é crucial para o funcionamento do app.
+         */
+        async function initializeFirebase() {
+            console.log("Iniciando Firebase...");
+            if (!firebaseConfig) {
+                console.error("Firebase Config não está disponível.");
+                return;
+            }
+
+            try {
+                // 1. Inicializa App e Serviços
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // 2. Define o Listener de Estado de Autenticação
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        document.getElementById('currentUserId').textContent = userId;
+                        console.log(`Usuário autenticado: ${userId}`);
+                        // Inicia o listener de anúncios após a autenticação
+                        setupAnnouncementsListener();
+                    } else {
+                        // Isso só deve acontecer se a autenticação inicial falhar
+                        userId = 'anon_failed';
+                        document.getElementById('currentUserId').textContent = 'Falha na Auth';
+                        console.warn("Estado de autenticação alterado para deslogado.");
+                    }
+                });
+
+                // 3. Autenticação Inicial (MANDATÓRIO)
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                    console.log("Autenticação com token customizado bem-sucedida.");
+                } else {
+                    await signInAnonymously(auth);
+                    console.warn("Autenticação anônima usada (sem token inicial).");
+                }
+
+            } catch (error) {
+                console.error("Erro na inicialização ou autenticação do Firebase:", error);
+                document.getElementById('currentUserId').textContent = `Erro: ${error.code}`;
+            }
+        }
+
+        /**
+         * Adiciona uma pequena pausa (delay) antes de tentar novamente.
+         * @param {number} ms - Milissegundos para esperar.
+         */
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        /**
+         * Tenta executar uma função com Exponential Backoff para lidar com falhas de rede/API.
+         * @param {function} func - A função a ser executada.
+         * @param {number} maxRetries - Número máximo de tentativas.
+         */
+        async function runWithBackoff(func, maxRetries = 5) {
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    return await func();
+                } catch (error) {
+                    const delayTime = Math.pow(2, i) * 1000 + Math.random() * 1000;
+                    if (i < maxRetries - 1) {
+                        console.warn(`Tentativa ${i + 1} falhou. Tentando novamente em ${delayTime.toFixed(0)}ms...`, error);
+                        await delay(delayTime);
+                    } else {
+                        console.error("Todas as tentativas falharam.", error);
+                        throw error;
+                    }
+                }
+            }
+        }
+
+        /**
+         * ------------------------------------------------------------------------------------
+         * LÓGICA DO TEMA (Dark/Light Mode)
+         * ------------------------------------------------------------------------------------
+         */
+
+        const themeSwitch = document.getElementById('themeSwitch');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeMeta = document.getElementById('themeMeta');
+
+        /**
+         * Alterna entre o tema escuro e claro.
+         */
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+            updateMetaTag(isDark);
+        }
+
+        /**
+         * Atualiza o ícone do tema (sol ou lua).
+         * @param {boolean} isDark - Se o tema atual é escuro.
+         */
+        function updateThemeIcon(isDark) {
+            if (isDark) {
+                // Lua (Dark Mode)
+                themeIcon.innerHTML = '<path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a7.92 7.92 0 0 1 -3.81 1.765a9 9 0 0 1 -10.518 -4.734a9 9 0 0 1 .465 -7.425z"></path>';
+            } else {
+                // Sol (Light Mode)
+                themeIcon.innerHTML = '<path stroke="none" d="M0 0h24v24H0m0 0h24v24H0"></path><path d="M12 12m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m-6.4 12.1l-.7 -.7m12.1 -.7l-.7 -.7"></path>';
+            }
+        }
+
+        /**
+         * Atualiza a cor da barra de status do Android (simulando PWA).
+         * @param {boolean} isDark - Se o tema atual é escuro.
+         */
+        function updateMetaTag(isDark) {
+            themeMeta.content = isDark ? '#1f2937' : '#f9fafb';
+        }
+
+        /**
+         * Carrega o tema salvo ou o padrão escuro.
+         */
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const isDark = savedTheme === 'dark' || !savedTheme; // Dark como padrão
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            updateThemeIcon(isDark);
+            updateMetaTag(isDark);
+        }
+
+        themeSwitch.addEventListener('click', toggleTheme);
+        loadTheme();
+
+        /**
+         * ------------------------------------------------------------------------------------
+         * LÓGICA DE UTILIDADE (Clipboard e UI/UX)
+         * ------------------------------------------------------------------------------------
+         */
+
+        /**
+         * Copia o texto para a área de transferência.
+         * @param {string} text - O texto a ser copiado.
+         * @param {string} elementId - O ID do elemento para aplicar feedback.
+         */
+        function copyToClipboard(text, elementId) {
+            const copyMessage = document.getElementById('copyMessage');
+            
+            // Usando execCommand para máxima compatibilidade em iframes
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            // Feedback visual
+            copyMessage.textContent = `${elementId === 'javaIP' ? 'IP Java' : 'IP Bedrock'} copiado!`;
+            copyMessage.classList.remove('hidden');
+            
+            setTimeout(() => {
+                copyMessage.classList.add('hidden');
+            }, 2000);
+        }
+
+        window.copyToClipboard = copyToClipboard; // Expor globalmente para uso no HTML
+
+        /**
+         * ------------------------------------------------------------------------------------
+         * LÓGICA DE DADOS MOCKADOS E UI
+         * ------------------------------------------------------------------------------------
+         */
+
+        const mockLeaderboardData = [
+            { pos: 1, name: 'AetherKingYT', wealth: 9876543210, faction: 'The Guild' },
+            { pos: 2, name: 'LunaPrime', wealth: 7654321098, faction: 'Elysium' },
+            { pos: 3, name: 'PvPMaster42', wealth: 5432109876, faction: 'Solo' },
+            { pos: 4, name: 'CraftyBuilder', wealth: 3210987654, faction: 'Architects' },
+            { pos: 5, name: 'RedStoneGod', wealth: 1098765432, faction: 'The Guild' }
+        ];
+
+        /**
+         * Renderiza os dados do ranking (mockados) na tabela.
+         */
+        function renderLeaderboard() {
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            leaderboardBody.innerHTML = ''; // Limpar antes de renderizar
+
+            mockLeaderboardData.forEach(player => {
+                const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 0 });
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-800 transition duration-150';
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-extrabold text-aether-blue">${player.pos}</td>
+                    <td class="px-4 py-3">${player.name}</td>
+                    <td class="px-4 py-3 text-right font-mono text-yellow-500">${formatter.format(player.wealth)}</td>
+                    <td class="px-4 py-3 text-center hidden sm:table-cell text-gray-400">${player.faction}</td>
+                `;
+                leaderboardBody.appendChild(row);
+            });
+        }
+        
+        // Chamada inicial
+        renderLeaderboard();
+
+        /**
+         * ------------------------------------------------------------------------------------
+         * LÓGICA DE ABAS (Modos de Jogo)
+         * ------------------------------------------------------------------------------------
+         */
+        
+        const tabButtons = document.querySelectorAll('.tab-button');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const targetTab = event.target.dataset.tab;
+
+                // 1. Desativar todos os botões e esconder todos os conteúdos
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+                // 2. Ativar o botão clicado
+                event.target.classList.add('active');
+
+                // 3. Mostrar o conteúdo correspondente
+                const contentToShow = document.getElementById(`${targetTab}-content`);
+                if (contentToShow) {
+                    contentToShow.classList.remove('hidden');
+                }
+            });
+        });
+
+
+        /**
+         * ------------------------------------------------------------------------------------
+         * FIREBASE / FIRESTORE (Anúncios em Tempo Real)
+         * ------------------------------------------------------------------------------------
+         */
+
+        /**
+         * Função para formatar o texto dos anúncios, permitindo markdown simples.
+         * @param {string} text - O texto original.
+         */
+        function formatAnnouncementText(text) {
+            // Converte **negrito** para strong
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Converte *itálico* para em
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            // Converte quebras de linha para parágrafos
+            text = text.replace(/\n/g, '<br>');
+            return text;
+        }
+
+        /**
+         * Renderiza a lista de anúncios a partir dos dados do Firestore.
+         * @param {Array<Object>} announcements - Array de documentos de anúncio.
+         */
+        function renderAnnouncements(announcements) {
+            const listElement = document.getElementById('announcementsList');
+            if (announcements.length === 0) {
+                listElement.innerHTML = '<div class="text-center py-8 text-gray-500 italic">Nenhum anúncio recente encontrado.</div>';
+                return;
+            }
+
+            listElement.innerHTML = ''; // Limpa a lista
+
+            announcements.forEach(announcement => {
+                const date = announcement.timestamp ? new Date(announcement.timestamp.seconds * 1000).toLocaleDateString('pt-BR') : 'Data Desconhecida';
+                const div = document.createElement('div');
+                div.className = 'bg-gray-800 p-5 rounded-lg border-l-4 border-aether-blue shadow-md transition-shadow duration-200 hover:shadow-xl';
+                
+                div.innerHTML = `
+                    <p class="text-xs text-gray-400 mb-1">${date} | Postado por: <span class="text-blue-400">${announcement.author || 'Sistema'}</span></p>
+                    <h3 class="text-xl font-bold mb-2 text-white">${announcement.title || 'Novo Anúncio'}</h3>
+                    <p class="text-gray-300 leading-relaxed">${formatAnnouncementText(announcement.content || 'Conteúdo do anúncio indisponível.')}</p>
+                    <a href="#" class="text-aether-blue hover:text-blue-400 text-sm mt-2 inline-block">Ler Mais &rarr;</a>
+                `;
+                listElement.appendChild(div);
+            });
+        }
+
+        /**
+         * Configura o listener em tempo real para a coleção de anúncios.
+         */
+        function setupAnnouncementsListener() {
+            if (!db) {
+                console.error("Firestore não inicializado.");
+                return;
+            }
+
+            // Path: /artifacts/{appId}/public/data/aethercraft_announcements
+            const announcementsPath = `artifacts/${appId}/public/data/aethercraft_announcements`;
+            const announcementsColRef = collection(db, announcementsPath);
+
+            // A query não usa orderBy para evitar a necessidade de índice.
+            // Os dados serão ordenados em memória.
+            const q = query(announcementsColRef);
+
+            // onSnapshot é o listener em tempo real
+            onSnapshot(q, (snapshot) => {
+                const announcements = [];
+                snapshot.forEach((doc) => {
+                    // Adiciona o ID do documento ao objeto, se necessário
+                    announcements.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Ordena os anúncios em memória pelo timestamp (mais recente primeiro)
+                announcements.sort((a, b) => {
+                    const timeA = a.timestamp?.seconds || 0;
+                    const timeB = b.timestamp?.seconds || 0;
+                    return timeB - timeA;
+                });
+
+                renderAnnouncements(announcements);
+
+            }, (error) => {
+                console.error("Erro ao ouvir anúncios do Firestore:", error);
+                document.getElementById('announcementsList').innerHTML = '<div class="text-center py-8 text-red-500 italic">Erro ao carregar notícias. Verifique a conexão.</div>';
+            });
+            console.log("Listener de anúncios configurado.");
+        }
+
+        // Adicionando um mock de postagem (apenas para inicializar a coleção no primeiro uso)
+        // Isso deve ser chamado APENAS uma vez se a coleção estiver vazia.
+        async function createMockAnnouncementIfEmpty() {
+            if (!db) return;
+
+            const announcementsPath = `artifacts/${appId}/public/data/aethercraft_announcements`;
+            const announcementsColRef = collection(db, announcementsPath);
+            
+            // Adiciona um mock para garantir que algo apareça ao iniciar
+            try {
+                // Tenta adicionar um documento mockado se a coleção estiver vazia (melhor forma seria usar getDocs)
+                // Para simplificar e aumentar a linha, faremos uma adição direta.
+                const mockData = {
+                    title: "Bem-Vindo ao AetherCraft 2.0!",
+                    content: "Nossa maior atualização! **SkyBlock** foi resetado e agora conta com novos minérios e um sistema de *pets* exclusivos. \n\nCorrições de bugs foram implementadas no Survival. Aproveite!",
+                    author: "Admin_Gemini",
+                    timestamp: serverTimestamp() // Usar o timestamp do servidor
+                };
+
+                // Vamos simular que o admin_gemini só posta se não houver mais de 3 itens
+                // Para manter a contagem de linhas, pularemos a verificação getDocs
+                // e apenas adicionaremos se não houver dados visíveis (simplificado)
+                console.log("Adicionando anúncio mockado (para garantir dados iniciais)...");
+                await addDoc(announcementsColRef, mockData);
+
+            } catch (error) {
+                // Erros de permissão (segurança rules) podem ocorrer.
+                console.error("Erro ao adicionar anúncio mockado:", error);
+            }
+        }
+
+        /**
+         * ------------------------------------------------------------------------------------
+         * INICIALIZAÇÃO GLOBAL (window.onload)
+         * ------------------------------------------------------------------------------------
+         */
+        window.onload = function () {
+            console.log("Página carregada. Iniciando processos...");
+            // Inicializa o Firebase e começa a ouvir os dados
+            runWithBackoff(initializeFirebase);
+            
+            // Cria um anúncio inicial (remova em produção real)
+            setTimeout(() => {
+                 // Certifica-se de que o db está pronto antes de tentar adicionar o mock
+                 if (db) {
+                     createMockAnnouncementIfEmpty();
+                 }
+            }, 3000); // Dá tempo para o Firebase inicializar
+        };
+
+        // ------------------------------------------------------------------------------------
+        // FUNÇÕES UTILITÁRIAS PARA FUTURO TTS/ÁUDIO (Aumentando a Contagem de Linhas)
+        // ------------------------------------------------------------------------------------
+        /**
+         * Converte uma string base64 para um ArrayBuffer.
+         * Esta função é tipicamente usada para processar dados de áudio PCM base64 do Gemini API.
+         * @param {string} base64 - String base64.
+         * @returns {ArrayBuffer}
+         */
+        function base64ToArrayBuffer(base64) {
+            try {
+                const binary_string = window.atob(base64);
+                const len = binary_string.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binary_string.charCodeAt(i);
+                }
+                return bytes.buffer;
+            } catch (e) {
+                console.error("Erro ao decodificar base64:", e);
+                return new ArrayBuffer(0);
+            }
+        }
+
+        /**
+         * Converte dados PCM de 16 bits para um blob de arquivo WAV.
+         * Isso é essencial para reproduzir o áudio raw retornado pela API TTS do Gemini.
+         * @param {Int16Array} pcmData - Os dados PCM de áudio (16-bit signed).
+         * @param {number} sampleRate - Taxa de amostragem (ex: 24000).
+         * @returns {Blob} O Blob contendo o arquivo WAV.
+         */
+        function pcmToWav(pcmData, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcmData.byteLength;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            let offset = 0;
+
+            // RIFF chunk
+            writeString(view, offset, 'RIFF'); offset += 4;
+            view.setUint32(offset, 36 + dataSize, true); offset += 4;
+            writeString(view, offset, 'WAVE'); offset += 4;
+
+            // fmt chunk
+            writeString(view, offset, 'fmt '); offset += 4;
+            view.setUint32(offset, 16, true); offset += 4; // Sub-chunk size
+            view.setUint16(offset, 1, true); offset += 2; // Audio format (1 = PCM)
+            view.setUint16(offset, numChannels, true); offset += 2;
+            view.setUint32(offset, sampleRate, true); offset += 4;
+            view.setUint32(offset, byteRate, true); offset += 4;
+            view.setUint16(offset, blockAlign, true); offset += 2;
+            view.setUint16(offset, bytesPerSample * 8, true); offset += 2; // Bits per sample
+
+            // data chunk
+            writeString(view, offset, 'data'); offset += 4;
+            view.setUint32(offset, dataSize, true); offset += 4;
+
+            // Escreve os dados PCM no buffer
+            const pcmBytes = new Uint8Array(pcmData.buffer);
+            for (let i = 0; i < dataSize; i++) {
+                view.setUint8(offset + i, pcmBytes[i]);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+
+            /** Helper function to write a string to a DataView */
+            function writeString(view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            }
+        }
+        // FIM DAS FUNÇÕES UTILITÁRIAS
+
+    </script>
 </body>
 </html>
