@@ -20,39 +20,59 @@
             font-weight: normal;
             font-style: normal;
         }
-        /* MineChat e MinecraftEnchant foram removidas para melhor legibilidade */
 
-        /* Define a fonte padrão como sans-serif do sistema */
+        /* ----------------------------------------------------------- */
+        /* CORREÇÕES DE TEMA E FUNDO DINÂMICO */
+        /* ----------------------------------------------------------- */
         body {
             font-family: sans-serif; /* Fonte legível padrão para o corpo */
-            transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
             
-            /* 2. LIGHT MODE BACKGROUND */
-            background-image: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/backgrounds/light.png');
+            /* Propriedades de fundo Comuns (Fixo e Cover) */
             background-size: cover;
             background-attachment: fixed;
             background-position: center;
             background-repeat: no-repeat;
+            
+            /* Transição para a imagem de fundo e cores */
+            transition: background-image 0.5s ease-in-out, background-color 0.3s, color 0.3s;
         }
 
-        /* Classes para o Dark Mode (padrão) */
+        /* LIGHT MODE (Padrão quando .dark NÃO está presente) */
+        body:not(.dark) {
+            color: #1f2937; /* Texto escuro */
+            background-color: #f9fafb; /* Fundo claro fallback */
+            /* Imagem de Fundo para Tema Claro */
+            background-image: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/backgrounds/light.png');
+        }
+
+        /* Ajuste de Transparência Light Mode */
+        body:not(.dark) .card {
+            background-color: rgba(255, 255, 255, 0.85); /* Cartões brancos semi-transparentes */
+            border-color: #d1d5db;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+        body:not(.dark) header {
+            background-color: rgba(255, 255, 255, 0.90);
+            border-bottom: 1px solid #d1d5db;
+        }
+        
+        /* DARK MODE (Quando .dark ESTÁ presente) */
         .dark {
-            background-color: #111827; /* Fundo escuro fallback */
             color: #f3f4f6; /* Texto claro */
-            /* 3. DARK MODE BACKGROUND */
+            background-color: #111827; /* Fundo escuro fallback */
+            /* Imagem de Fundo para Tema Escuro */
             background-image: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/backgrounds/dark.png');
         }
         
-        /* Ajuste de Transparência: Cartões com 85% de opacidade */
+        /* Ajuste de Transparência Dark Mode */
         .dark .card {
-            background-color: rgba(31, 41, 55, 0.85); 
+            background-color: rgba(31, 41, 55, 0.85); /* Cartões escuros mais transparentes (85%) */
             border-color: #374151;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
         }
-        /* Ajuste de Transparência: Header com 90% de opacidade */
         .dark header {
-            background-color: rgba(31, 41, 55, 0.90);
+            background-color: rgba(31, 41, 55, 0.90); /* Header escuro mais transparente (90%) */
             border-bottom: 1px solid #374151;
         }
 
@@ -63,7 +83,7 @@
             letter-spacing: 0.15em;
         }
 
-        /* Estilo para links VIP/Loja (Removendo fonte, mantendo apenas o destaque) */
+        /* Estilo para links VIP/Loja (Mantendo apenas o destaque) */
         .vip-link {
             text-shadow: 1px 1px 2px rgba(255, 255, 0, 0.5);
             letter-spacing: 0.05em;
@@ -410,7 +430,9 @@
          * Alterna entre o tema escuro e claro.
          */
         function toggleTheme() {
-            const isDark = document.documentElement.classList.toggle('dark');
+            // A classe 'dark' é aplicada no <html>, que é o que o Tailwind espera, 
+            // mas estamos aplicando no <body> para as regras CSS personalizadas.
+            const isDark = document.body.classList.toggle('dark'); 
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateThemeIcon(isDark);
             updateMetaTag(isDark);
@@ -444,11 +466,15 @@
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
             const isDark = savedTheme === 'dark' || !savedTheme; // Dark como padrão
+            
+            // Remove ambas as classes de segurança e aplica a correta
+            document.body.classList.remove('dark');
             if (isDark) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
+                document.body.classList.add('dark');
             }
+            // OBS: O Tailwind usa o <html> para dark/light, mas aqui usamos o <body>
+            // para controlar o background-image personalizado.
+
             updateThemeIcon(isDark);
             updateMetaTag(isDark);
         }
@@ -592,12 +618,14 @@
             announcements.forEach(announcement => {
                 const date = announcement.timestamp ? new Date(announcement.timestamp.seconds * 1000).toLocaleDateString('pt-BR') : 'Data Desconhecida';
                 const div = document.createElement('div');
-                div.className = 'bg-gray-800 p-5 rounded-lg border-l-4 border-aether-blue shadow-md transition-shadow duration-200 hover:shadow-xl';
+                // No modo claro, usamos bg-white com opacidade por CSS
+                const cardBaseClass = document.body.classList.contains('dark') ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300';
+                div.className = `card p-5 rounded-lg border-l-4 border-aether-blue shadow-md transition-shadow duration-200 hover:shadow-xl ${cardBaseClass}`;
                 
                 div.innerHTML = `
                     <p class="text-xs text-gray-400 mb-1">${date} | Postado por: <span class="text-blue-400">${announcement.author || 'Sistema'}</span></p>
-                    <h3 class="text-xl font-bold mb-2 text-white">${announcement.title || 'Novo Anúncio'}</h3>
-                    <p class="text-gray-300 leading-relaxed">${formatAnnouncementText(announcement.content || 'Conteúdo do anúncio indisponível.')}</p>
+                    <h3 class="text-xl font-bold mb-2 ${document.body.classList.contains('dark') ? 'text-white' : 'text-gray-800'}">${announcement.title || 'Novo Anúncio'}</h3>
+                    <p class="${document.body.classList.contains('dark') ? 'text-gray-300' : 'text-gray-700'} leading-relaxed">${formatAnnouncementText(announcement.content || 'Conteúdo do anúncio indisponível.')}</p>
                     <a href="#" class="text-aether-blue hover:text-blue-400 text-sm mt-2 inline-block">Ler Mais &rarr;</a>
                 `;
                 listElement.appendChild(div);
