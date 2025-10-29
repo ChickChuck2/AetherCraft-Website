@@ -117,7 +117,7 @@
         .discord-widget-container {
             /* Mantém a altura responsiva e bordas temáticas */
             width: 100%;
-            height: 350px; /* Altura fixa para o widget do Discord */
+            height: 500px; /* AJUSTADO para 500px para corresponder ao iframe do usuário */
             overflow: hidden;
         }
         .discord-widget-container iframe {
@@ -216,13 +216,14 @@
                 <!-- Widget Embed do Discord -->
                 <!-- O widget do Discord exibirá membros online e o botão de convite -->
                 <div class="discord-widget-container rounded-xl">
-                    <!-- ID do Servidor Discord Inserido (121709792515535669) -->
-                    <iframe 
-                        src="https://discord.com/widget?id=121709792515535669&theme=dark" 
-                        allowtransparency="true" 
-                        frameborder="0" 
-                        sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-                        title="Discord Widget"
+                    <!-- Usando o iframe final fornecido pelo usuário, com o ID corrigido e altura definida -->
+                    <iframe src="https://discord.com/widget?id=1217097925155356692&theme=dark" 
+                            width="100%" 
+                            height="100%" 
+                            allowtransparency="true" 
+                            frameborder="0" 
+                            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" 
+                            title="Discord Widget"
                     ></iframe>
                 </div>
                 
