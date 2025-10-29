@@ -11,32 +11,20 @@
     
     <!-- Link para Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Removendo a fonte Inter, usaremos as fontes Minecraft -->
     
     <style>
-        /* 1. FONT IMPORTS (Fontes Personalizadas do Minecraft) */
+        /* 1. FONT IMPORTS (Mantendo apenas MinecraftTitle) */
         @font-face {
             font-family: 'MinecraftTitle';
             src: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/fonts/title.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
         }
-        @font-face {
-            font-family: 'MineChat';
-            src: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/fonts/minechat.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'MinecraftEnchant';
-            src: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/fonts/enchant.ttf') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
+        /* MineChat e MinecraftEnchant foram removidas para melhor legibilidade */
 
-        /* Define a fonte MineChat como padrão */
+        /* Define a fonte padrão como sans-serif do sistema */
         body {
-            font-family: 'MineChat', sans-serif; /* Usando MineChat como principal */
+            font-family: sans-serif; /* Fonte legível padrão para o corpo */
             transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
             
@@ -56,26 +44,27 @@
             background-image: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/backgrounds/dark.png');
         }
         
+        /* Ajuste de Transparência: Cartões com 85% de opacidade */
         .dark .card {
-            background-color: rgba(31, 41, 55, 0.95); /* Cartões semi-transparentes sobre o fundo */
+            background-color: rgba(31, 41, 55, 0.85); 
             border-color: #374151;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
         }
+        /* Ajuste de Transparência: Header com 90% de opacidade */
         .dark header {
-            background-color: rgba(31, 41, 55, 0.98);
+            background-color: rgba(31, 41, 55, 0.90);
             border-bottom: 1px solid #374151;
         }
 
-        /* Estilo para o Título principal do Minecraft */
+        /* Estilo para o Título principal do Minecraft (Mantido) */
         .headerTitle {
             font-family: 'MinecraftTitle', sans-serif !important;
             text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5); /* Efeito de sombra para parecer 3D */
             letter-spacing: 0.15em;
         }
 
-        /* Estilo para links VIP/Loja (Usando fonte de encantamento) */
+        /* Estilo para links VIP/Loja (Removendo fonte, mantendo apenas o destaque) */
         .vip-link {
-            font-family: 'MinecraftEnchant', sans-serif;
             text-shadow: 1px 1px 2px rgba(255, 255, 0, 0.5);
             letter-spacing: 0.05em;
         }
@@ -259,7 +248,7 @@
                 <div id="survival-content" class="tab-content content-section hidden">
                     <h3 class="text-2xl font-semibold mb-3 text-green-500">Survival RPG - Aventura Mágica</h3>
                     <p class="text-gray-300 leading-relaxed">
-                        Um mundo Survival tradicional, mas com elementos de RPG: habilidades customizadas (Mcmmo), chefes únicos (Bosses), e um mapa de exploração imenso. Junte-se a amigos para derrotar criaturas lendárias e reivindicar terras. O foco é em cooperação, exploração e progressão de caráter.
+                        Um mundo Survival tradicional, mas com elementos de RPG: habilidades customizadas (Mcmmo), chefes únicos (Bosses), e um mapa de exploração imenso. Junte-se a amigos para derrotar criaturas legendárias e reivindicar terras. O foco é em cooperação, exploração e progressão de caráter.
                     </p>
                 </div>
 
