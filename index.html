@@ -11,29 +11,73 @@
     
     <!-- Link para Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Removendo a fonte Inter, usaremos as fontes Minecraft -->
     
     <style>
-        /* Define a fonte Inter como padrão */
+        /* 1. FONT IMPORTS (Fontes Personalizadas do Minecraft) */
+        @font-face {
+            font-family: 'MinecraftTitle';
+            src: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/fonts/title.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'MineChat';
+            src: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/fonts/minechat.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'MinecraftEnchant';
+            src: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/fonts/enchant.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* Define a fonte MineChat como padrão */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'MineChat', sans-serif; /* Usando MineChat como principal */
             transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
+            
+            /* 2. LIGHT MODE BACKGROUND */
+            background-image: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/backgrounds/light.png');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         /* Classes para o Dark Mode (padrão) */
         .dark {
-            background-color: #111827; /* Fundo escuro */
+            background-color: #111827; /* Fundo escuro fallback */
             color: #f3f4f6; /* Texto claro */
+            /* 3. DARK MODE BACKGROUND */
+            background-image: url('https://raw.githubusercontent.com/ChickChuck2/AetherCraft-Website/main/sources/backgrounds/dark.png');
         }
+        
         .dark .card {
-            background-color: #1f2937; /* Cartões um pouco mais claros que o fundo */
+            background-color: rgba(31, 41, 55, 0.95); /* Cartões semi-transparentes sobre o fundo */
             border-color: #374151;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
         }
         .dark header {
-            background-color: #1f2937;
+            background-color: rgba(31, 41, 55, 0.98);
             border-bottom: 1px solid #374151;
+        }
+
+        /* Estilo para o Título principal do Minecraft */
+        .headerTitle {
+            font-family: 'MinecraftTitle', sans-serif !important;
+            text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5); /* Efeito de sombra para parecer 3D */
+            letter-spacing: 0.15em;
+        }
+
+        /* Estilo para links VIP/Loja (Usando fonte de encantamento) */
+        .vip-link {
+            font-family: 'MinecraftEnchant', sans-serif;
+            text-shadow: 1px 1px 2px rgba(255, 255, 0, 0.5);
+            letter-spacing: 0.05em;
         }
         
         /* Estilos customizados para barra de rolagem (melhora a estética) */
@@ -102,7 +146,7 @@
 <body class="dark">
     <!-- Estrutura Principal: Header fixo e layout de grade responsivo -->
     <header class="sticky top-0 z-30 flex items-center justify-between p-4 shadow-xl dark:bg-aether-dark dark:border-b dark:border-gray-700">
-        <h1 class="text-3xl font-extrabold text-aether-blue tracking-wider">AetherCraft</h1>
+        <h1 class="headerTitle text-3xl font-extrabold text-aether-blue tracking-wider">AetherCraft</h1>
         <div class="flex items-center space-x-4">
             <!-- Botão de Status (Simulado/Mockado) -->
             <div id="serverStatus" class="flex items-center space-x-2 p-2 rounded-full text-sm font-semibold transition-all duration-300">
@@ -169,7 +213,7 @@
                     <li><a href="#modos-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Modos de Jogo</a></li>
                     <li><a href="#ranking-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Ranking Global</a></li>
                     <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Fórum/Discord</a></li>
-                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150 text-yellow-400 font-semibold">Loja (VIP)</a></li>
+                    <li><a href="#" class="vip-link block p-3 rounded-lg hover:bg-gray-700 transition duration-150 text-yellow-400 font-semibold">Loja (VIP)</a></li>
                 </ul>
             </nav>
 
@@ -265,8 +309,6 @@
     <!-- 
         ====================================================================================
         INÍCIO DO BLOCO DE SCRIPT JAVASCRIPT
-        O código a seguir contém as integrações com Firebase (Firestore), lógica de UI e
-        funções de utilidade, totalizando uma alta contagem de linhas, conforme solicitado.
         ====================================================================================
     -->
     <script type="module">
