@@ -104,28 +104,6 @@
             background: #6b7280;
         }
 
-        /* Estilo para abas ativas */
-        .tab-button.active {
-            background-color: #3b82f6;
-            color: white;
-            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.5);
-            transform: translateY(-2px);
-        }
-
-        /* Animação de entrada para conteúdo */
-        .content-section {
-            animation: fadeIn 0.5s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Efeito de brilho no botão de status */
-        .glow-green {
-            box-shadow: 0 0 10px #10b981;
-        }
-
         /* Placeholder para ícones (usando SVG simples) */
         .icon {
             display: inline-block;
@@ -157,13 +135,15 @@
     <header class="sticky top-0 z-30 flex items-center justify-between p-4 shadow-xl dark:bg-aether-dark dark:border-b dark:border-gray-700">
         <h1 class="headerTitle text-3xl font-extrabold text-aether-blue tracking-wider">AetherCraft</h1>
         <div class="flex items-center space-x-4">
-            <!-- Botão de Status (Simulado/Mockado) -->
+            <!-- Botão de Status (SIMULADO OFFLINE) -->
             <div id="serverStatus" class="flex items-center space-x-2 p-2 rounded-full text-sm font-semibold transition-all duration-300">
                 <span class="relative flex h-3 w-3">
-                    <span id="statusPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span id="statusIndicator" class="relative inline-flex rounded-full h-3 w-3 bg-green-500 glow-green"></span>
+                    <!-- Ping off -->
+                    <span id="statusPing" class="absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
+                    <!-- Indicador vermelho de offline -->
+                    <span id="statusIndicator" class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                 </span>
-                <span id="statusText">Online: 128/250</span>
+                <span id="statusText">Offline: 0/100</span>
             </div>
 
             <!-- Botão de Troca de Tema -->
@@ -180,7 +160,7 @@
     <!-- Layout principal da página (Grid responsivo) -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 p-4 lg:p-8">
 
-        <!-- Coluna 1: Sidebar para Navegação e Conexão (Esquerda no Desktop, Topo no Mobile) -->
+        <!-- Coluna 1: Sidebar para Navegação, Conexão e Discord -->
         <div id="sidebar" class="col-span-1 space-y-6">
 
             <!-- Card de Conexão Rápida (IP e Porta) -->
@@ -214,15 +194,27 @@
                 <div id="copyMessage" class="text-sm mt-3 text-center text-green-400 hidden">IP copiado!</div>
             </div>
             
-            <!-- Card de Navegação (Menu) -->
+            <!-- Card de Redes Sociais/Discord (NOVO) -->
+            <div class="card p-6 rounded-xl border border-gray-700 shadow-lg transition-all duration-300">
+                <h2 class="text-2xl font-bold mb-4 text-aether-blue">Nossas Comunidades</h2>
+                <a href="https://discord.gg/2XBaUz23vQ" target="_blank" class="flex items-center space-x-3 p-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 transition duration-150 text-white font-semibold shadow-md">
+                    <!-- Ícone Discord (SVG) -->
+                    <svg class="icon w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M14 8h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1m-4 0h-1a2 2 0 0 1 -2 -2v-3a2 2 0 0 1 2 -2h1"></path><path d="M10 18v1a2 2 0 0 0 2 2h2a2 2 0 0 0 2 -2v-1"></path><path d="M12 21a9 9 0 0 0 9 -9a9 9 0 0 0 -9 -9a9 9 0 0 0 -9 9a9 9 0 0 0 9 9z"></path></svg>
+                    <span>Discord Oficial</span>
+                </a>
+                <p class="mt-3 text-sm text-gray-400">Membros no Discord: <span id="discordMembers" class="font-bold text-white">425</span></p>
+            </div>
+
+
+            <!-- Card de Navegação (Menu) - ATUALIZADO -->
             <nav id="menu" class="card p-6 rounded-xl border border-gray-700 shadow-lg">
                 <h2 class="text-2xl font-bold mb-4 text-aether-blue">Menu Principal</h2>
                 <ul class="space-y-2">
                     <li><a href="#anuncios-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Notícias e Anúncios</a></li>
-                    <li><a href="#modos-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Modos de Jogo</a></li>
+                    <li><a href="#modos-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Modo de Jogo: Rankup</a></li>
                     <li><a href="#ranking-section" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Ranking Global</a></li>
-                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Fórum/Discord</a></li>
-                    <li><a href="#" class="vip-link block p-3 rounded-lg hover:bg-gray-700 transition duration-150 text-yellow-400 font-semibold">Loja (VIP)</a></li>
+                    <li><a href="https://discord.gg/2XBaUz23vQ" target="_blank" class="block p-3 rounded-lg hover:bg-gray-700 transition duration-150">Discord</a></li>
+                    <li><a href="#" class="vip-link block p-3 rounded-lg hover:bg-gray-700 transition duration-150 text-yellow-400 font-semibold">Loja VIP (Em Breve)</a></li>
                 </ul>
             </nav>
 
@@ -243,49 +235,31 @@
                 </div>
             </section>
 
-            <!-- Seção 2: Modos de Jogo (Tabbed Interface) -->
+            <!-- Seção 2: Modos de Jogo (Rankup Único) - ATUALIZADO -->
             <section id="modos-section" class="content-section card p-6 rounded-xl border border-gray-700 shadow-lg">
                 <h2 class="text-3xl font-bold mb-6 flex items-center text-aether-blue">
                     <svg class="icon w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M16 8l-4 4l-4 -4"></path><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M12 3a9 9 0 0 1 9 9"></path></svg>
-                    Explore os Modos de Jogo
+                    Modo de Jogo Principal: Rankup
                 </h2>
                 
-                <!-- Botões de Abas -->
-                <div class="flex flex-wrap gap-4 mb-6 p-1 bg-gray-700 rounded-xl">
-                    <button class="tab-button active p-3 rounded-lg text-lg font-semibold transition duration-200 flex-1 lg:flex-none" data-tab="skyblock">SkyBlock (1.20)</button>
-                    <button class="tab-button p-3 rounded-lg text-lg font-semibold transition duration-200 flex-1 lg:flex-none" data-tab="survival">Survival (RPG)</button>
-                    <button class="tab-button p-3 rounded-lg text-lg font-semibold transition duration-200 flex-1 lg:flex-none" data-tab="factions">Factions (PvP)</button>
-                </div>
-
-                <!-- Conteúdo das Abas -->
-                <div id="skyblock-content" class="tab-content content-section">
-                    <h3 class="text-2xl font-semibold mb-3 text-yellow-500">AetherSky - O Bloco Flutuante</h3>
+                <!-- Conteúdo Fixo do Rankup -->
+                <div id="rankup-content" class="content-section">
+                    <h3 class="text-2xl font-semibold mb-3 text-green-500">AetherRankup - Evolução Contínua</h3>
                     <p class="text-gray-300 leading-relaxed">
-                        Comece com uma ilha minúscula e utilize economia personalizada, missões diárias e fazendas automatizadas para se tornar o magnata mais rico dos céus! Apresenta minérios personalizados, encantamentos exclusivos e um sistema de ranking por valor de ilha. Ideal para jogadores que amam progresso e competição a longo prazo.
+                        Comece do zero e evolua através de dezenas de minas e prestígios. Nosso sistema de **Rankup** é focado em economia, prestígio e grind satisfatório. Compre e venda itens, complete missões diárias e desbloqueie áreas VIP exclusivas à medida que sobe de Rank. Competição amigável e uma comunidade ativa esperam por você!
                     </p>
+                    <div class="mt-4 p-4 bg-gray-700 rounded-lg">
+                        <p class="font-bold text-yellow-400">Próximo Rank:</p>
+                        <p class="text-lg">Rank Dourado (Requer $500.000)</p>
+                    </div>
                 </div>
-                
-                <div id="survival-content" class="tab-content content-section hidden">
-                    <h3 class="text-2xl font-semibold mb-3 text-green-500">Survival RPG - Aventura Mágica</h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        Um mundo Survival tradicional, mas com elementos de RPG: habilidades customizadas (Mcmmo), chefes únicos (Bosses), e um mapa de exploração imenso. Junte-se a amigos para derrotar criaturas legendárias e reivindicar terras. O foco é em cooperação, exploração e progressão de caráter.
-                    </p>
-                </div>
-
-                <div id="factions-content" class="tab-content content-section hidden">
-                    <h3 class="text-2xl font-semibold mb-3 text-red-500">Factions - Guerra e Dominação</h3>
-                    <p class="text-gray-300 leading-relaxed">
-                        Forme sua facção, construa sua base impenetrável e trave guerra contra facções rivais! Com plugins de canhão, proteção de território e recompensas por dominação. O modo mais competitivo do AetherCraft, focado em estratégia, PvP (Player vs. Player) e gestão de recursos para a guerra.
-                    </p>
-                </div>
-
             </section>
             
             <!-- Seção 3: Ranking Global (Mocked Data) -->
             <section id="ranking-section" class="content-section card p-6 rounded-xl border border-gray-700 shadow-lg">
                 <h2 class="text-3xl font-bold mb-6 flex items-center text-yellow-400">
                     <svg class="icon w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M9 12l2 2l4 -4"></path><path d="M12 3a9 9 0 1 0 9 9"></path></svg>
-                    Top 5 Mais Ricos (SkyBlock)
+                    Top 5 Mais Ricos (Rankup)
                 </h2>
                 
                 <!-- Tabela de Ranking Responsiva -->
@@ -556,28 +530,19 @@
 
         /**
          * ------------------------------------------------------------------------------------
-         * LÓGICA DE ABAS (Modos de Jogo)
+         * LÓGICA DE ABAS (Removida e Simplificada para Rankup Único)
          * ------------------------------------------------------------------------------------
+         * OBS: A lógica de abas foi removida, mas o código utilitário é mantido abaixo
+         * para fins de estrutura.
          */
         
+        // Mantendo apenas o código utilitário de abas por completude
         const tabButtons = document.querySelectorAll('.tab-button');
-        
         tabButtons.forEach(button => {
             button.addEventListener('click', (event) => {
-                const targetTab = event.target.dataset.tab;
-
-                // 1. Desativar todos os botões e esconder todos os conteúdos
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-
-                // 2. Ativar o botão clicado
-                event.target.classList.add('active');
-
-                // 3. Mostrar o conteúdo correspondente
-                const contentToShow = document.getElementById(`${targetTab}-content`);
-                if (contentToShow) {
-                    contentToShow.classList.remove('hidden');
-                }
+                // Esta lógica não será executada, pois os botões foram removidos no HTML,
+                // mas é mantida aqui em caso de expansão futura.
+                console.log("Botão de aba clicado (Lógica desativada: Rankup é o modo único).");
             });
         });
 
@@ -618,14 +583,17 @@
             announcements.forEach(announcement => {
                 const date = announcement.timestamp ? new Date(announcement.timestamp.seconds * 1000).toLocaleDateString('pt-BR') : 'Data Desconhecida';
                 const div = document.createElement('div');
-                // No modo claro, usamos bg-white com opacidade por CSS
+                // Aplica classes de tema corretamente nos cards gerados dinamicamente
                 const cardBaseClass = document.body.classList.contains('dark') ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-300';
+                const textClass = document.body.classList.contains('dark') ? 'text-gray-300' : 'text-gray-700';
+                const titleClass = document.body.classList.contains('dark') ? 'text-white' : 'text-gray-800';
+
                 div.className = `card p-5 rounded-lg border-l-4 border-aether-blue shadow-md transition-shadow duration-200 hover:shadow-xl ${cardBaseClass}`;
                 
                 div.innerHTML = `
                     <p class="text-xs text-gray-400 mb-1">${date} | Postado por: <span class="text-blue-400">${announcement.author || 'Sistema'}</span></p>
-                    <h3 class="text-xl font-bold mb-2 ${document.body.classList.contains('dark') ? 'text-white' : 'text-gray-800'}">${announcement.title || 'Novo Anúncio'}</h3>
-                    <p class="${document.body.classList.contains('dark') ? 'text-gray-300' : 'text-gray-700'} leading-relaxed">${formatAnnouncementText(announcement.content || 'Conteúdo do anúncio indisponível.')}</p>
+                    <h3 class="text-xl font-bold mb-2 ${titleClass}">${announcement.title || 'Novo Anúncio'}</h3>
+                    <p class="${textClass} leading-relaxed">${formatAnnouncementText(announcement.content || 'Conteúdo do anúncio indisponível.')}</p>
                     <a href="#" class="text-aether-blue hover:text-blue-400 text-sm mt-2 inline-block">Ler Mais &rarr;</a>
                 `;
                 listElement.appendChild(div);
@@ -687,7 +655,7 @@
                 // Para simplificar e aumentar a linha, faremos uma adição direta.
                 const mockData = {
                     title: "Bem-Vindo ao AetherCraft 2.0!",
-                    content: "Nossa maior atualização! **SkyBlock** foi resetado e agora conta com novos minérios e um sistema de *pets* exclusivos. \n\nCorrições de bugs foram implementadas no Survival. Aproveite!",
+                    content: "Nossa maior atualização! **Rankup** é agora o modo principal e estamos focados na estabilidade e progresso. \n\nO Rankup foi resetado. Aproveite!",
                     author: "Admin_Gemini",
                     timestamp: serverTimestamp() // Usar o timestamp do servidor
                 };
